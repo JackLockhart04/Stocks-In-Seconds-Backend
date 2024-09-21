@@ -1,0 +1,89 @@
+<code>
+  <div id="auth-buttons">
+    <!-- Buttons will be dynamically inserted here -->
+  </div>
+
+  <div id="user-info"></div>
+  <script>
+    function fetchUserInfo() {
+      fetch("http://localhost:5000/auth/user", {
+        credentials: "include", // Include cookies in the request
+      })
+        .then((response) => {
+          if (response.status === 401) {
+            throw new Error("User not logged in");
+          }
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log("Received data:", data);
+          const userInfoDiv = document.getElementById("user-info");
+          const authButtonsDiv = document.getElementById("auth-buttons");
+          if (data.name) {
+            userInfoDiv.innerText = `Username: ${data.name}, Email: ${data.preferred_username}`;
+            authButtonsDiv.innerHTML = `
+              <button id="logout-button" class="auth-button">Logout</button>
+            `;
+            document
+              .getElementById("logout-button")
+              .addEventListener("click", function () {
+                top.location.href = "http://localhost:5000/auth/logout";
+              });
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching user info:", error);
+          const userInfoDiv = document.getElementById("user-info");
+          const authButtonsDiv = document.getElementById("auth-buttons");
+          userInfoDiv.innerText = "Failed to load user information.";
+          authButtonsDiv.innerHTML = `
+            <button id="login-button" class="auth-button">Login with Microsoft</button>
+          `;
+          document
+            .getElementById("login-button")
+            .addEventListener("click", function () {
+              top.location.href = "http://localhost:5000/auth/login";
+            });
+        });
+    }
+
+    // Fetch user info on page load
+    window.onload = fetchUserInfo;
+  </script>
+
+  <style>
+    #auth-buttons {
+      display: flex;
+      justify-content: center; /* Center horizontally */
+      align-items: center; /* Center vertically */
+      height: 100%; /* Full height of parent */
+      width: 100%; /* Full width of parent */
+    }
+    .auth-button {
+      width: 180px;
+      height: 45px;
+      background-color: black;
+      color: white;
+      border: 1px solid white;
+      border-radius: 999px; /* Fully rounded edges */
+      cursor: pointer;
+      text-align: center;
+      line-height: 0.25in;
+      font-size: 0.75em; /* Adjust font size if needed */
+    }
+
+    .auth-button:hover {
+      background-color: white;
+      color: black;
+    }
+
+    #user-info {
+      display: flex;
+      justify-content: center; /* Center horizontally */
+      align-items: center; /* Center vertically */
+    }
+  </style>
+</code>
