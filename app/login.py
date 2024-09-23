@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, redirect, url_for, session, current_app, make_response
+from flask import Blueprint, request, jsonify, redirect, url_for, session, current_app
 import msal
 auth_bp = Blueprint('auth', __name__)
 
@@ -37,11 +37,9 @@ def getAToken():
     
     # Redirect to the user page, response is included
     return redirect('https://stocksinseconds.com/')
-    return redirect("http://localhost:5500/test_account.html")
 
 @auth_bp.route('/user', methods=['GET'])
 def get_user():
-    print(request.cookies)
     if "user" in session:
         return jsonify(session["user"])
     return jsonify({'message': 'User not logged in'}), 401
@@ -49,7 +47,7 @@ def get_user():
 
 print('Login blueprint registered')
 
-@auth_bp.route('/logout')
+@auth_bp.route('/logout', methods=['GET'])
 def logout():
     # Clear the session
     session.clear()
@@ -62,3 +60,7 @@ def logout():
 def logged_out():
     # Redirect to the desired URL after logout
     return redirect("https://stocksinseconds.com/")
+
+@auth_bp.route('/test', methods=['GET'])
+def test():
+    return jsonify({'message': 'Test successful'}), 200

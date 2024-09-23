@@ -1,1 +1,6 @@
 .env
+zappa_settings.json
+venv
+# Ignore Python bytecode files and cache directories
+__pycache__/
+*.py[cod]

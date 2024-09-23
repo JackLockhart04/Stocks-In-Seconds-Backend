@@ -11,8 +11,8 @@ class Config:
     REDIRECT_PATH = "/auth/getAToken"
     SCOPE = ["User.Read"]
     SESSION_TYPE = "filesystem"
-    SERVER_NAME = "localhost:5000"  # Change for deployment
+
     # Cookies
     SESSION_COOKIE_SAMESITE = 'None'  # Allow cross-site cookies
     SESSION_COOKIE_SECURE = True  # Ensure cookies are only sent over HTTPS
-    SESSION_COOKIE_DOMAIN = 'localhost'  # Change for deployment
+    # SESSION_COOKIE_DOMAIN = os.getenv('SERVER_NAME')  # Set the domain for the cookies
