@@ -1,0 +1,1 @@
+I want my users table to have a userID as the main key, a username, email, and a date it was created. I also want another table for each persons subscription data. I want it to have a primary key, userID, subscription level(1-5), next_payment_date, creation_date, last_update_date, and status(true or false)

@@ -1,0 +1,41 @@
+<code>
+  <script>
+    window.top.globalUserData = null;
+    // Ensure fetchCallbacks is defined
+    if (!window.top.fetchCallbacks) {
+      window.top.fetchCallbacks = [];
+    }
+    function fetchUserInfo() {
+      fetch(
+        "https://aatcsmwt80.execute-api.us-east-2.amazonaws.com/dev/auth/user",
+        {
+          credentials: "include", // Include cookies in the request
+        }
+      )
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data.name) {
+            window.top.globalUserData = data;
+          } else {
+            window.top.globalUserData = null;
+          }
+          window.top.fetchCallbacks.forEach((callback) => {
+            if (typeof callback === "function") {
+              callback(window.top.globalUserData);
+            }
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching user info:", error);
+        });
+    }
+
+    // Fetch user info on page load
+    window.onload = fetchUserInfo;
+  </script>
+</code>
