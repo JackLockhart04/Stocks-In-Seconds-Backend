@@ -15,7 +15,7 @@ def create_app():
     # Enable CORS for all routes
     CORS(app, supports_credentials=True)
 
-    from app.login import auth_bp
+    from app.auth.routes import auth_bp
     app.register_blueprint(auth_bp, url_prefix='/auth')
     
     from app.db.user import User

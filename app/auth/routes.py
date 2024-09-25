@@ -57,7 +57,7 @@ def get_user():
                 table_name=DB_TABLE_NAME,
                 email=email,
                 username=username,
-                subscription_status=1,  # or any default status you want to set
+                subscription_status=0,  # or any default status you want to set
                 last_login=datetime.now().strftime("%m/%d/%Y")  # Get current date in month/day/year format
             )
             new_user.add()
