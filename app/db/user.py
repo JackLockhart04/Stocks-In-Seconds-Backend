@@ -66,16 +66,26 @@ class User:
             }
         )
 
-    def update(self, **kwargs):
-        update_expression = "SET " + ", ".join(f"{k} = :{k}" for k in kwargs.keys())
-        expression_attribute_values = {f":{k}": v for k, v in kwargs.items()}
+    # def update(self, **kwargs):
+    #     update_expression = "SET " + ", ".join(f"{k} = :{k}" for k in kwargs.keys())
+    #     expression_attribute_values = {f":{k}": v for k, v in kwargs.items()}
+    #     self.table.update_item(
+    #         Key={'email': self.email},
+    #         UpdateExpression=update_expression,
+    #         ExpressionAttributeValues=expression_attribute_values
+    #     )
+    #     for k, v in kwargs.items():
+    #         setattr(self, k, v)
+            
+    def update(self, updates):
+        update_expression = "SET " + ", ".join(f"{k} = :{k}" for k in updates.keys())
+        expression_attribute_values = {f":{k}": v for k, v in updates.items()}
+        
         self.table.update_item(
             Key={'email': self.email},
             UpdateExpression=update_expression,
             ExpressionAttributeValues=expression_attribute_values
         )
-        for k, v in kwargs.items():
-            setattr(self, k, v)
 
     def delete(self):
         self.table.delete_item(Key={'email': self.email})

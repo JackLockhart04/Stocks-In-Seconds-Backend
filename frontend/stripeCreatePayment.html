@@ -1,0 +1,52 @@
+<code>
+  <form id="subscription-form">
+    <input type="email" id="email" placeholder="Email" required />
+    <div id="card-element"></div>
+    <button type="submit">Subscribe</button>
+    <div id="card-errors" role="alert"></div>
+  </form>
+
+  <script src="https://js.stripe.com/v3/"></script>
+  <script>
+    const stripe_publishable_key =
+      "pk_test_51PwVi0Jd0vBZvn7xFQSNRPDVLx4IOklw60oLwYpZRP2hEmKPVlUOzSEMbiSlzzX6Bf3juIOmnccg6Fjz49bVSBvm00kiJ1ZCYi";
+    const stripe = Stripe(stripe_publishable_key);
+    const elements = stripe.elements();
+    const card = elements.create("card");
+    card.mount("#card-element");
+
+    const form = document.getElementById("subscription-form");
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const { error, paymentMethod } = await stripe.createPaymentMethod({
+        type: "card",
+        card: card,
+        billing_details: {
+          email: document.getElementById("email").value,
+        },
+      });
+
+      if (error) {
+        document.getElementById("card-errors").textContent = error.message;
+      } else {
+        // Send paymentMethod.id to your server
+        fetch("http://127.0.0.1:5000/payment/create-subscription", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: document.getElementById("email").value,
+            payment_method: paymentMethod.id,
+          }),
+        })
+          .then((response) => response.json())
+          .then((subscription) => {
+            console.log(subscription);
+            // Handle subscription response
+          });
+      }
+    });
+  </script>
+</code>

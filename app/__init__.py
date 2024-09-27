@@ -18,6 +18,9 @@ def create_app():
     from app.auth.routes import auth_bp
     app.register_blueprint(auth_bp, url_prefix='/auth')
     
+    from app.payment.routes import payment_bp
+    app.register_blueprint(payment_bp, url_prefix='/payment')
+    
     from app.db.user import User
     User.create_table('stocks-in-seconds-users') # Also change the name in user_operations.py
 
