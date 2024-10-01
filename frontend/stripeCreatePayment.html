@@ -1,10 +1,26 @@
 <code>
+  <style>
+    #subscription-form {
+      display: none;
+    }
+
+    #subscription-confirmation {
+      display: none;
+    }
+
+    #login_message {
+      display: block;
+    }
+    /* Add more styles here as needed */
+  </style>
   <form id="subscription-form">
-    <input type="email" id="email" placeholder="Email" required />
     <div id="card-element"></div>
     <button type="submit">Subscribe</button>
     <div id="card-errors" role="alert"></div>
   </form>
+
+  <div id="subscription-confirmation">Subscription active</div>
+  <div id="login_message">Login to subscribe</div>
 
   <script src="https://js.stripe.com/v3/"></script>
   <script>
@@ -15,15 +31,19 @@
     const card = elements.create("card");
     card.mount("#card-element");
 
-    const form = document.getElementById("subscription-form");
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
+    let userData = null;
 
+    // Submit form
+    const submitForm = document.getElementById("subscription-form");
+    // Only called when submit button it clicked
+    submitForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      userEmail = userData.preferred_username;
       const { error, paymentMethod } = await stripe.createPaymentMethod({
         type: "card",
         card: card,
         billing_details: {
-          email: document.getElementById("email").value,
+          email: userEmail,
         },
       });
 
@@ -31,16 +51,19 @@
         document.getElementById("card-errors").textContent = error.message;
       } else {
         // Send paymentMethod.id to your server
-        fetch("http://127.0.0.1:5000/payment/create-subscription", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: document.getElementById("email").value,
-            payment_method: paymentMethod.id,
-          }),
-        })
+        fetch(
+          "https://aatcsmwt80.execute-api.us-east-2.amazonaws.com/dev/payment/create-subscription",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: userEmail,
+              payment_method: paymentMethod.id,
+            }),
+          }
+        )
           .then((response) => response.json())
           .then((subscription) => {
             console.log(subscription);
@@ -48,5 +71,36 @@
           });
       }
     });
+
+    // Adding callbackFunction to show subscription form
+    function userDataCallback(data) {
+      const contentDiv = document.getElementById("content");
+      const subscriptionForm = document.getElementById("subscription-form");
+      const subscriptionConfirmation = document.getElementById(
+        "subscription-confirmation"
+      );
+      const loginMessage = document.getElementById("login_message");
+      // Hide or show form based on subscription status
+      if (data && data.subscription_status === 0) {
+        subscriptionForm.style.display = "block";
+        subscriptionConfirmation.style.display = "none";
+        loginMessage.style.display = "none";
+      } else if (data && data.subscription_status === 1) {
+        subscriptionForm.style.display = "none";
+        subscriptionConfirmation.style.display = "block";
+        loginMessage.style.display = "none";
+      } else {
+        subscriptionForm.style.display = "none";
+        subscriptionConfirmation.style.display = "none";
+        loginMessage.style.display = "block";
+      }
+      userData = data;
+    }
+
+    // Ensure fetchCallbacks is defined
+    if (!window.top.fetchCallbacks) {
+      window.top.fetchCallbacks = [];
+    }
+    window.top.fetchCallbacks.push(userDataCallback);
   </script>
 </code>

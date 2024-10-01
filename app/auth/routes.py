@@ -79,10 +79,13 @@ def get_user():
                 difference = cur_date - last_payment_date
                 if difference.days < 31:
                     update_data["subscription_status"] = 1
+                    session["user"]["subscription_status"] = 1
                 else:
                     update_data["subscription_status"] = 0
+                    session["user"]["subscription_status"] = 0
             else:
                 update_data["subscription_status"] = 0
+                session["user"]["subscription_status"] = 0
                 
             #Update db
             user.update(update_data)
