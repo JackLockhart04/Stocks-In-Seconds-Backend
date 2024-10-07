@@ -39,7 +39,6 @@ def getAToken():
     
     # Set the session
     session["user"] = result.get("id_token_claims")
-    print(session["user"])
     
     # Redirect to the user page, response is included
     return redirect('https://stocksinseconds.com/')
@@ -48,7 +47,8 @@ def getAToken():
 def get_user():
     if "user" in session:
         email = session["user"]["preferred_username"]
-       # Retrieve the user from the database
+        session["user"]["email"] = email
+        # Retrieve the user from the database
         user = User.get(DB_TABLE_NAME, email)
         if not user:
             # Add the user to the DynamoDB table if not exists
@@ -64,22 +64,25 @@ def get_user():
             new_user.add()
         else:
             # Update attributes of user (Always last login)
-            update_data = {"last_login":datetime.now().strftime("%m/%d/%Y")}
+            update_data = {"last_login":datetime.now().strftime("%m/%d/%Y")} # FIXME to my timezone (CDT)
             
             # Update payment info and subscription status if user has made a payment
             from app.payment.routes import get_last_payment
             last_payment_info = get_last_payment(email)
+
+            # If user has made a payment
             if last_payment_info:
-                last_payment_time = last_payment_info.get("created")
-                last_payment_date = datetime.fromtimestamp(last_payment_time)
-                update_data["last_payment_date"] = last_payment_date.strftime("%m/%d/%Y")
+                # Update user's subscription status
+                last_payment_status = last_payment_info.get("status")
+                update_data["subscription_start_date"] = last_payment_info.get("start_date")
+                update_data["subscription_end_date"] = last_payment_info.get("end_date")
 
                 # Check subscription status
-                cur_date = datetime.now()
-                difference = cur_date - last_payment_date
-                if difference.days < 31:
+                if last_payment_status == "active":
                     update_data["subscription_status"] = 1
                     session["user"]["subscription_status"] = 1
+                    session["user"]["subscription_start_date"] = last_payment_info.get("start_date")
+                    session["user"]["subscription_end_date"] = last_payment_info.get("end_date")
                 else:
                     update_data["subscription_status"] = 0
                     session["user"]["subscription_status"] = 0
@@ -89,13 +92,12 @@ def get_user():
                 
             #Update db
             user.update(update_data)
-        
         # Return the user
         return jsonify(session["user"]), 200
     
     # Not logged in
     else:
-        return jsonify({'message': 'User not logged in'}), 205
+        return jsonify({'message': 'User not logged in'}), 200
 
 
 print('Login blueprint registered')

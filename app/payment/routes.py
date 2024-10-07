@@ -12,6 +12,21 @@ def create_subscription():
     data = request.json
     email = data['email']
     payment_method = data['payment_method']
+    payment_plan = data['payment_plan']
+    discount_code = data.get('discount_code')
+    
+    # Check if the discount code exists
+    promotion_code_id = None
+    if discount_code:
+        try:
+            # List promotion codes with the provided code
+            promotion_codes = stripe.PromotionCode.list(code=discount_code)
+            if promotion_codes.data:
+                promotion_code_id = promotion_codes.data[0].id
+            else:
+                return jsonify({'error': 'Invalid discount code'}), 200
+        except stripe.error.InvalidRequestError as e:
+            return jsonify({'error': 'Invalid discount code'}), 200
 
     # Create customer
     customer = stripe.Customer.create(
@@ -20,14 +35,20 @@ def create_subscription():
         invoice_settings={'default_payment_method': payment_method},
     )
 
-    price_id = 'price_1Q1AbPJd0vBZvn7xQ9kePkjF'
+    monthly_price_id = 'price_1Q1AbPJd0vBZvn7xQ9kePkjF'
+    anual_price_id = 'price_1Q5avwJd0vBZvn7x8MCoiUbI'
+    price_id = monthly_price_id if payment_plan == 'monthly' else anual_price_id
     
     # Create subscription
-    subscription = stripe.Subscription.create(
-        customer=customer.id,
-        items=[{'price': price_id}],
-        expand=['latest_invoice.payment_intent'],
-    )
+    subscription_data = {
+        'customer': customer.id,
+        'items': [{'price': price_id}],
+        'expand': ['latest_invoice.payment_intent'],
+    }
+    if promotion_code_id:
+        subscription_data['promotion_code'] = promotion_code_id
+
+    subscription = stripe.Subscription.create(**subscription_data)
 
     return jsonify(subscription)
 
@@ -70,5 +91,28 @@ def get_last_payment(email):
 
     # Get the payment intent
     payment_intent = stripe.PaymentIntent.retrieve(latest_invoice.payment_intent)
+    
+    from datetime import datetime, timezone
+    
+    start = latest_subscription.current_period_start
+    end = latest_subscription.current_period_end
+    
+    # Convert Unix timestamps to UTC datetime
+    start_utc = datetime.fromtimestamp(start, tz=timezone.utc)
+    end_utc = datetime.fromtimestamp(end, tz=timezone.utc)
+    
+    # Format the dates to include hours, minutes, seconds, and time zone
+    start_date = start_utc.strftime("%m/%d/%Y %H:%M:%S %Z")
+    end_date = end_utc.strftime("%m/%d/%Y %H:%M:%S %Z")
+    
+    return_data = {
+        "created": payment_intent.created,
+        "amount": payment_intent.amount,
+        "status": latest_subscription.status,
+        "start_date": start_date,
+        "start_timestamp": start,
+        "end_date": end_date,
+        "end_timestamp": end
+    }
 
-    return payment_intent
+    return return_data

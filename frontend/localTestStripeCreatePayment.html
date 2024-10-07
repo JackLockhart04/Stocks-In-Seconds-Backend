@@ -219,9 +219,6 @@
       const userEmail = userData.email;
       const selectedPlan = selectedPlanInput.value;
 
-      document.getElementById("subscription-container").style.display = "none";
-      document.getElementById("loading-message").style.display = "block";
-
       const { error, paymentMethod } = await stripe.createPaymentMethod({
         type: "card",
         card: numberCard,
@@ -232,38 +229,31 @@
 
       if (error) {
         document.getElementById("card-errors").textContent = error.message;
-        document.getElementById("loading-message").style.display = "none";
-        document.getElementById("subscription-container").style.display =
-          "flex";
       } else {
         // Send paymentMethod.id and selected plan to your server
-        fetch(
-          "https://aatcsmwt80.execute-api.us-east-2.amazonaws.com/dev/payment/create-subscription",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email: userEmail,
-              payment_method: paymentMethod.id,
-              payment_plan: selectedPlan,
-              discount_code: discountCodeElement.value,
-            }),
-          }
-        )
+        fetch("http://localhost:5000/payment/create-subscription", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: userEmail,
+            payment_method: paymentMethod.id,
+            payment_plan: selectedPlan,
+            discount_code: discountCodeElement.value,
+          }),
+        })
           .then((response) => response.json())
           .then((subscription) => {
             // Handle subscription response
+            console.log(subscription);
             if (subscription.status === "active") {
               document.getElementById(
                 "subscription-confirmation"
               ).style.display = "block";
-              document.getElementById("loading-message").style.display = "none";
-            } else if (subscription.error) {
-              document.getElementById("loading-message").style.display = "none";
               document.getElementById("subscription-container").style.display =
-                "flex";
+                "none";
+            } else if (subscription.error) {
               const cardErrors = document.getElementById("card-errors");
               cardErrors.innerText = subscription.error;
               cardErrors.style.display = "block";

@@ -1,14 +1,13 @@
 <code>
-  <div id="username"></div>
+  <div id="username">Loading...</div>
 
   <script>
+    const usernameDiv = document.getElementById("username");
     function userDataCallback(data) {
-      if (data) {
-        document.getElementById(
-          "username"
-        ).innerHTML = `Welcome, ${data.name}!`;
+      if (data && data.email) {
+        usernameDiv.innerHTML = `Welcome, ${data.name}!`;
       } else {
-        document.getElementById("username").innerHTML = `Welcome, guest!`;
+        usernameDiv.innerHTML = `Welcome, guest!`;
       }
     }
     // Ensure fetchCallbacks is defined

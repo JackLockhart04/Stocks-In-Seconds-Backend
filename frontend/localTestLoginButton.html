@@ -21,16 +21,14 @@
         logoutButton.style.display = "flex";
         loadingButton.style.display = "none";
         logoutButton.addEventListener("click", function () {
-          top.location.href =
-            "https://aatcsmwt80.execute-api.us-east-2.amazonaws.com/dev/auth/logout";
+          top.location.href = "http://localhost:5000/auth/logout";
         });
       } else {
         loginButton.style.display = "flex";
         logoutButton.style.display = "none";
         loadingButton.style.display = "none";
         loginButton.addEventListener("click", function () {
-          top.location.href =
-            "https://aatcsmwt80.execute-api.us-east-2.amazonaws.com/dev/auth/login";
+          top.location.href = "http://localhost:5000/auth/login";
         });
       }
     }
