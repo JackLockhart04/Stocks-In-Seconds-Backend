@@ -112,7 +112,38 @@ def get_last_payment(email):
         "start_date": start_date,
         "start_timestamp": start,
         "end_date": end_date,
-        "end_timestamp": end
+        "end_timestamp": end,
+        "cancel_at_period_end": latest_subscription.cancel_at_period_end
     }
 
     return return_data
+
+# Cancel subscription at end of billing period
+@payment_bp.route('/cancel-subscription', methods=['POST'])
+def cancel_subscription():
+    data = request.json
+    email = data['email']
+
+    try:
+        # Retrieve the customer based on the email
+        customers = stripe.Customer.list(email=email)
+        if not customers.data:
+            return jsonify({'error': 'Customer not found'}), 404
+
+        customer_id = customers.data[0].id
+
+        # Retrieve the customer's subscriptions
+        subscriptions = stripe.Subscription.list(customer=customer_id, status='active')
+        if not subscriptions.data:
+            return jsonify({'error': 'Active subscription not found'}), 404
+
+        subscription_id = subscriptions.data[0].id
+
+        # Update the subscription to cancel at the end of the current period
+        subscription = stripe.Subscription.modify(
+            subscription_id,
+            cancel_at_period_end=True
+        )
+        return jsonify(subscription)
+    except stripe.error.StripeError as e:
+        return jsonify({'error': str(e)}), 400

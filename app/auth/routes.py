@@ -64,7 +64,7 @@ def get_user():
             new_user.add()
         else:
             # Update attributes of user (Always last login)
-            update_data = {"last_login":datetime.now().strftime("%m/%d/%Y")} # FIXME to my timezone (CDT)
+            update_data = {"last_login":datetime.now().strftime("%m/%d/%Y")}
             
             # Update payment info and subscription status if user has made a payment
             from app.payment.routes import get_last_payment
@@ -83,6 +83,7 @@ def get_user():
                     session["user"]["subscription_status"] = 1
                     session["user"]["subscription_start_date"] = last_payment_info.get("start_date")
                     session["user"]["subscription_end_date"] = last_payment_info.get("end_date")
+                    session["user"]["cancel_at_period_end"] = last_payment_info.get("cancel_at_period_end")
                 else:
                     update_data["subscription_status"] = 0
                     session["user"]["subscription_status"] = 0
@@ -115,7 +116,3 @@ def logout():
 def logged_out():
     # Redirect to the desired URL after logout
     return redirect("https://stocksinseconds.com/")
-
-@auth_bp.route('/test', methods=['GET'])
-def test():
-    return jsonify({'message': 'Test successful'}), 200

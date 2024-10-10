@@ -79,9 +79,19 @@
       border: 1px solid #000;
       border-radius: 5px;
     }
-    #subscription-confirmation {
+    #subscription-active-container {
       display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+    #subscription-confirmation {
+      display: block;
       color: green;
+    }
+    #subscription_payment_status {
+      display: flex;
+      justify-items: center;
+      color: black;
     }
     #login-message {
       display: none;
@@ -156,7 +166,11 @@
         <div id="card-errors"></div>
       </form>
     </div>
-    <div id="subscription-confirmation">Subscription active</div>
+    <div id="subscription-active-container">
+      <div id="subscription-confirmation">Subscription active</div>
+      <div id="subscription-payment-status"></div>
+      <button id="cancel-subscription">Cancel subscription</button>
+    </div>
     <button
       id="login-message"
       onclick="top.location.href='https://www.stocksinseconds.com/account';"
@@ -219,7 +233,8 @@
       const userEmail = userData.email;
       const selectedPlan = selectedPlanInput.value;
 
-      document.getElementById("subscription-container").style.display = "none";
+      hideAllMessages();
+      document.getElementById("loading-message").innerText = "Processing...";
       document.getElementById("loading-message").style.display = "block";
 
       const { error, paymentMethod } = await stripe.createPaymentMethod({
@@ -231,8 +246,8 @@
       });
 
       if (error) {
+        hideAllMessages();
         document.getElementById("card-errors").textContent = error.message;
-        document.getElementById("loading-message").style.display = "none";
         document.getElementById("subscription-container").style.display =
           "flex";
       } else {
@@ -256,12 +271,14 @@
           .then((subscription) => {
             // Handle subscription response
             if (subscription.status === "active") {
+              hideAllMessages();
               document.getElementById(
-                "subscription-confirmation"
-              ).style.display = "block";
-              document.getElementById("loading-message").style.display = "none";
+                "subscription-active-container"
+              ).style.display = "flex";
+              document.getElementById("subscription-payment-status").innerText =
+                "Next payment on " + subscription.subscription_end_date;
             } else if (subscription.error) {
-              document.getElementById("loading-message").style.display = "none";
+              hideAllMessages();
               document.getElementById("subscription-container").style.display =
                 "flex";
               const cardErrors = document.getElementById("card-errors");
@@ -272,31 +289,86 @@
       }
     });
 
+    document
+      .getElementById("cancel-subscription")
+      .addEventListener("click", () => {
+        hideAllMessages();
+        document.getElementById("loading-message").innerText = "Processing...";
+        fetch(
+          "https://aatcsmwt80.execute-api.us-east-2.amazonaws.com/dev/payment/cancel-subscription",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: userData.email,
+            }),
+          }
+        )
+          .then((response) => response.json())
+          .then((subscription) => {
+            // Handle subscription response
+            hideAllMessages();
+            if (subscription.error) {
+              hideAllMessages();
+              document.getElementById("subscription-container").style.display =
+                "flex";
+              const cardErrors = document.getElementById("card-errors");
+              cardErrors.innerText = subscription.error;
+              cardErrors.style.display = "block";
+            } else if (subscription) {
+              document.getElementById(
+                "subscription-active-container"
+              ).style.display = "flex";
+              document.getElementById("cancel-subscription").style.display =
+                "none";
+              document.getElementById("subscription-payment-status").innerText =
+                "Subscription ending on: " + subscription.subscription_end_date;
+            }
+          });
+      });
+
+    function hideAllMessages() {
+      document.getElementById("subscription-container").style.display = "none";
+      document.getElementById("subscription-active-container").style.display =
+        "none";
+      document.getElementById("login-message").style.display = "none";
+      document.getElementById("loading-message").style.display = "none";
+    }
+
     function userDataCallback(data) {
       userData = data;
       const subscriptionContainer = document.getElementById(
         "subscription-container"
       );
-      const subscriptionConfirmation = document.getElementById(
-        "subscription-confirmation"
+      const subscriptionActiveContainer = document.getElementById(
+        "subscription-active-container"
       );
       const loginMessage = document.getElementById("login-message");
       const loadingMessage = document.getElementById("loading-message");
+      // If logged in and no subscription
       if (data && !data.subscription_status) {
+        hideAllMessages();
         subscriptionContainer.style.display = "flex";
-        subscriptionConfirmation.style.display = "none";
-        loginMessage.style.display = "none";
-        loadingMessage.style.display = "none";
       } else if (data && data.subscription_status) {
-        subscriptionContainer.style.display = "none";
-        subscriptionConfirmation.style.display = "block";
-        loginMessage.style.display = "none";
-        loadingMessage.style.display = "none";
+        // If logged in and subscription active
+        hideAllMessages();
+        subscriptionActiveContainer.style.display = "flex";
+        if (data.cancel_at_period_end === "false") {
+          document.getElementById("cancel-subscription").style.display =
+            "block";
+          document.getElementById("subscription-payment-status").innerText =
+            "Next payment on " + data.subscription_end_date;
+        } else {
+          document.getElementById("cancel-subscription").style.display = "none";
+          document.getElementById("subscription-payment-status").innerText =
+            "Subscription ending on " + data.subscription_end_date;
+        }
       } else {
-        subscriptionContainer.style.display = "none";
-        subscriptionConfirmation.style.display = "none";
+        // Not logged in
+        hideAllMessages();
         loginMessage.style.display = "block";
-        loadingMessage.style.display = "none";
       }
     }
 
