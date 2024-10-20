@@ -1,0 +1,112 @@
+<code>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    .main-div {
+      display: flex;
+      flex-direction: row;
+      height: 800px;
+      width: 100%;
+      align-items: stretch; /* Ensure children stretch to fill the container vertically */
+      font-family: "Roboto", sans-serif;
+    }
+    .plan-card-conatiner {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .most-popular {
+      display: flex;
+      height: 20px;
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+    }
+    .plan-card {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      border: 3px solid #96969665;
+    }
+    .plan-name {
+      display: flex;
+      height: 10%;
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+      font-size: 10px;
+      color: #272727;
+    }
+    .plan-name h1 {
+      font-size: 20px;
+      font-weight: normal;
+    }
+    .plan-price {
+      display: flex;
+      flex-direction: column;
+      height: 10%;
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+      font-size: 25px;
+      color: #1172d3;
+    }
+    #contact-message {
+      font-size: 13px;
+      color: #000;
+    }
+    .plan-button-div {
+      display: flex;
+      height: 10%;
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+    }
+    .plan-button {
+      height: 50px;
+      width: 100px;
+      color: #fff;
+      background-color: #1172d3;
+      border: 0px;
+      border-radius: 3px;
+    }
+    .plan-button:hover {
+      cursor: pointer;
+      background-color: #000;
+    }
+    .plan-info {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      width: 100%;
+      align-items: center;
+      border-top: 2px solid #96969665;
+    }
+  </style>
+  <div class="main-div">
+    <div class="plan-card-conatiner">
+      <div class="most-popular"></div>
+      <div class="plan-card">
+        <div class="plan-name">
+          <h1>Plan Three</h1>
+        </div>
+        <div id="contact-message" class="plan-price">
+          <p>Contact sales for pricing</p>
+        </div>
+        <div class="plan-button-div">
+          <button class="plan-button">Contact sales</button>
+        </div>
+        <div class="plan-info">
+          <p>Something</p>
+          <p>Something else</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</code>

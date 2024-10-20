@@ -275,8 +275,6 @@
               document.getElementById(
                 "subscription-active-container"
               ).style.display = "flex";
-              document.getElementById("subscription-payment-status").innerText =
-                "Next payment on " + subscription.subscription_end_date;
             } else if (subscription.error) {
               hideAllMessages();
               document.getElementById("subscription-container").style.display =
@@ -355,7 +353,7 @@
         // If logged in and subscription active
         hideAllMessages();
         subscriptionActiveContainer.style.display = "flex";
-        if (data.cancel_at_period_end === "false") {
+        if (data.cancel_at_period_end === false) {
           document.getElementById("cancel-subscription").style.display =
             "block";
           document.getElementById("subscription-payment-status").innerText =
