@@ -13,6 +13,6 @@ class Config:
     SESSION_TYPE = "filesystem"
 
     # Cookies
-    SESSION_COOKIE_SAMESITE = 'None'  # Allow cross-site cookies
+    SESSION_COOKIE_SAMESITE = 'None'  # Allow cross-site cookies, None, Lax, Strict
     SESSION_COOKIE_SECURE = True  # Ensure cookies are only sent over HTTPS
-    # SESSION_COOKIE_DOMAIN = os.getenv('SERVER_NAME')  # Set the domain for the cookies
+    SESSION_COOKIE_DOMAIN = ".stocksinseconds.com"  # Set the domain for the cookies

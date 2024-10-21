@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, redirect, url_for, session, current_app
+from flask import Blueprint, request, jsonify, redirect, url_for, session, current_app, make_response
 from datetime import datetime
 import msal
 from app.db.user import User
@@ -40,8 +40,11 @@ def getAToken():
     # Set the session
     session["user"] = result.get("id_token_claims")
     
-    # Redirect to the user page, response is included
-    return redirect('https://stocksinseconds.com/')
+    # Include additional data in the redirect URL as query parameters
+    redirect_url = 'https://stocksinseconds.com/account'
+
+    # Redirect to the external URL with additional data
+    return redirect(redirect_url)
 
 @auth_bp.route('/user', methods=['GET'])
 def get_user():

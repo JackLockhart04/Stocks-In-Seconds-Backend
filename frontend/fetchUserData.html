@@ -6,12 +6,9 @@
       window.top.fetchCallbacks = [];
     }
     function fetchUserInfo() {
-      fetch(
-        "https://aatcsmwt80.execute-api.us-east-2.amazonaws.com/dev/auth/user",
-        {
-          credentials: "include", // Include cookies in the request
-        }
-      )
+      fetch("https://api.stocksinseconds.com/auth/user", {
+        credentials: "include", // Include cookies in the request
+      })
         .then((response) => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
