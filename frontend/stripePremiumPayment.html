@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      .main-div {
+        display: flex;
+        flex-direction: column;
+        height: auto; /* Allow auto height */
+        max-width: 600px; /* Set max width for responsiveness */
+        margin: 0 auto; /* Center the card */
+        align-items: stretch;
+        font-family: "Roboto", sans-serif;
+      }
+
+      /* Payment form styles */
+      #display-container {
+        height: auto; /* Set to auto for flexible height */
+        max-width: 600px;
+        margin: 20px 0; /* Space between plan card and payment form */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        border: 15px solid #1172d3;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease; /* Smooth transition */
+      }
+
+      .card-info-input {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      .card-input-text {
+        margin: 0;
+        font-weight: 700;
+      }
+
+      .card-element {
+        border: 2px solid #000;
+        border-radius: 5px;
+        padding: 10px; /* Increase padding for better touch targets */
+        width: 100%; /* Full width for responsiveness */
+      }
+
+      #card-number-element,
+      #card-expiry-element,
+      #card-cvc-element,
+      #card-postal-element {
+        display: none;
+      }
+
+      #button-container {
+        display: flex;
+        justify-content: center; /* Center the button */
+        margin-top: 20px; /* Add space above the button */
+      }
+
+      #submit-payment {
+        background-color: #1172d3; /* Button color */
+        color: #fff;
+        padding: 15px 30px; /* Adjust padding for a nicer look */
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 16px; /* Slightly larger font size */
+        transition: background-color 0.3s; /* Smooth transition */
+      }
+
+      #submit-payment:hover {
+        background-color: #0e5ab8; /* Darker shade on hover */
+      }
+
+      #loading-message,
+      #error-message {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        font-size: 20px;
+        font-weight: 700;
+        text-align: center; /* Center text for better visibility */
+        width: 100%; /* Ensure it takes the full width */
+      }
+
+      #error-message {
+        color: red; /* Error message color */
+      }
+
+      #stripe-logo {
+        width: 150px; /* Increased logo size */
+        margin: 0 auto 20px;
+      }
+
+      #powered-by {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 0px; /* Space above the Stripe logo */
+      }
+
+      /* Mobile responsiveness */
+      @media (max-width: 600px) {
+        .card-info-input {
+          flex-direction: column; /* Stack inputs vertically */
+        }
+
+        .card-element {
+          padding: 10px; /* Maintain padding for better touch targets */
+        }
+
+        #display-container {
+          padding: 15px; /* Reduce padding for mobile */
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-div">
+      <!-- Payment Form -->
+      <div id="display-container">
+        <img
+          id="stripe-logo"
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Stripe_Logo,_revised_2016.svg/500px-Stripe_Logo,_revised_2016.svg.png"
+          alt="Stripe Logo"
+        />
+        <div id="payment-container">
+          <div id="card-number-input" class="card-info-input">
+            <label class="card-input-text" for="card-number"
+              >Card number:</label
+            >
+            <div id="card-number-element" class="card-element"></div>
+            <input
+              type="text"
+              id="card-number-placeholder"
+              class="card-element"
+              placeholder="1234 1234 1234 1234"
+            />
+          </div>
+          <div id="card-expiry-input" class="card-info-input">
+            <label class="card-input-text" for="card-expiry"
+              >Expiration date:</label
+            >
+            <div id="card-expiry-element" class="card-element"></div>
+            <input
+              type="text"
+              id="card-expiry-placeholder"
+              class="card-element"
+              placeholder="MM / YY"
+            />
+          </div>
+          <div id="card-cvc-input" class="card-info-input">
+            <label class="card-input-text" for="card-cvc">CVC:</label>
+            <div id="card-cvc-element" class="card-element"></div>
+            <input
+              type="text"
+              id="card-cvc-placeholder"
+              class="card-element"
+              placeholder="CVC"
+            />
+          </div>
+          <div id="card-postal-input" class="card-info-input">
+            <label class="card-input-text" for="postal-code">Zip code:</label>
+            <div id="card-postal-element" class="card-element"></div>
+            <input
+              id="postal-code-placeholder"
+              type="text"
+              class="card-element"
+              placeholder="90210"
+            />
+          </div>
+          <div id="button-container">
+            <button id="submit-payment">Submit Payment</button>
+          </div>
+        </div>
+        <div id="loading-message">Loading...</div>
+        <div id="error-message"></div>
+      </div>
+      <div id="powered-by">
+        <img
+          src="https://certifiedturkish.ca/wp-content/uploads/2020/11/Stripe_company-Powered-by-Stripe-Logo.wine_.png"
+          alt="Powered by Stripe"
+          width="300"
+        />
+        <!-- Increased logo size -->
+      </div>
+    </div>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+      // Define variables
+      let userData = {};
+
+      document.getElementById("loading-message").style.display = "flex";
+      // Prevent paying without user data
+      document.getElementById("submit-payment").disabled = true;
+
+      // Stripe stuff
+      const stripe_publishable_key =
+        "pk_test_51PwVi0Jd0vBZvn7xFQSNRPDVLx4IOklw60oLwYpZRP2hEmKPVlUOzSEMbiSlzzX6Bf3juIOmnccg6Fjz49bVSBvm00kiJ1ZCYi";
+      const stripe = Stripe(stripe_publishable_key);
+
+      const elements = stripe.elements();
+      // Card number
+      const numberCard = elements.create("cardNumber");
+      numberCard.mount("#card-number-element");
+      document.getElementById("card-number-placeholder").style.display = "none";
+      document.getElementById("card-number-element").style.display = "block";
+      // Card expiry
+      const expiryCard = elements.create("cardExpiry");
+      expiryCard.mount("#card-expiry-element");
+      document.getElementById("card-expiry-placeholder").style.display = "none";
+      document.getElementById("card-expiry-element").style.display = "block";
+      // Card cvc
+      const cvcCard = elements.create("cardCvc");
+      cvcCard.mount("#card-cvc-element");
+      document.getElementById("card-cvc-placeholder").style.display = "none";
+      document.getElementById("card-cvc-element").style.display = "block";
+      // Card postal code
+      const postalCard = elements.create("postalCode");
+      postalCard.mount("#card-postal-element");
+      document.getElementById("postal-code-placeholder").style.display = "none";
+      document.getElementById("card-postal-element").style.display = "block";
+
+      // Handle payment submission
+      async function handleSubmit(event) {
+        event.preventDefault();
+
+        // Make sure user logged in
+        if (!userData.email) {
+          document.getElementById("error-message").textContent =
+            "User not logged in";
+          return;
+        }
+
+        document.getElementById("loading-message").style.display = "flex";
+        document.getElementById("submit-payment").disabled = true;
+
+        // Get payment method
+        const { error, paymentMethod } = await stripe.createPaymentMethod({
+          type: "card",
+          card: numberCard,
+          billing_details: {
+            email: userData.email,
+          },
+        });
+        // Error handling
+        if (error) {
+          if (error.message) {
+            document.getElementById("error-message").textContent =
+              error.message;
+          } else {
+            document.getElementById("error-message").textContent =
+              "An error occurred with the payment method.";
+          }
+          return;
+        }
+
+        try {
+          // Get payment method
+          const { error, paymentMethod } = await stripe.createPaymentMethod({
+            type: "card",
+            card: numberCard,
+            billing_details: {
+              email: userData.email,
+            },
+          });
+
+          if (error) {
+            document.getElementById("error-message").textContent =
+              error.message;
+            return;
+          }
+
+          // Payment data
+          const paymentData = {
+            email: userData.email,
+            payment_method_id: paymentMethod.id,
+            payment_plan: "startup_launch_premium", // Replace with actual payment plan
+          };
+
+          // Send data
+          const response = await fetch(
+            "https://api.stocksinseconds.com/payment/create-payment-intent",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(paymentData),
+            }
+          );
+
+          // If bad
+          if (!response.ok) {
+            console.error("Error creating payment intent:", result.error);
+          }
+
+          // Handle response
+          const result = await response.json();
+          document.getElementById("loading-message").style.display = "none";
+
+          // Confirm payment
+          const { client_secret } = result;
+          const { error: confirmError } = await stripe.confirmCardPayment(
+            client_secret
+          );
+
+          if (result.error) {
+            document.getElementById("error-message").textContent = result.error;
+          } else {
+            alert("Payment successful!");
+          }
+        } catch (error) {
+          console.error(error);
+          document.getElementById("error-message").textContent =
+            "An error occurred. Please try again.";
+        } finally {
+          document.getElementById("submit-payment").disabled = false;
+        }
+      }
+      // Add to button
+      document
+        .getElementById("submit-payment")
+        .addEventListener("click", handleSubmit);
+
+      // Ensure userDataCallback is defined
+      function userDataCallback(data) {
+        document.getElementById("loading-message").style.display = "none";
+        document.getElementById("submit-payment").disabled = false;
+        userData = data;
+      }
+
+      // Ensure fetchCallbacks is defined
+      if (!window.top.fetchCallbacks) {
+        window.top.fetchCallbacks = [];
+      }
+      window.top.fetchCallbacks.push(userDataCallback);
+    </script>
+  </body>
+</html>

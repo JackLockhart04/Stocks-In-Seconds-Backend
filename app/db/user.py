@@ -5,13 +5,10 @@ from app.db.dynamo_client import get_dynamodb_resource
 dynamodb = get_dynamodb_resource()
 
 class User:
-    def __init__(self, table_name, email=None, username=None, subscription_status=0, subscription_start_date=None, subscription_end_date=None, last_login=None):
+    def __init__(self, table_name, email=None, username=None, last_login=None):
         self.table = dynamodb.Table(table_name)  # Use the provided table name
         self.email = email
         self.username = username
-        self.subscription_status = subscription_status
-        self.subscription_start_date = subscription_start_date
-        self.subscription_end_date = subscription_end_date
         self.last_login = last_login  # Default value
     
     @classmethod
@@ -47,9 +44,6 @@ class User:
                     table_name=table_name,
                     email=item['email'],
                     username=item['username'],
-                    subscription_status=item['subscription_status'],
-                    subscription_start_date=item['subscription_start_date'],
-                    subscription_end_date=item['subscription_end_date'],
                     last_login=item['last_login']
                 )
             return None
@@ -62,9 +56,6 @@ class User:
             Item={
                 'email': self.email,
                 'username': self.username,
-                'subscription_status': self.subscription_status,
-                'subscription_start_date': self.subscription_start_date,
-                'subscription_end_date': self.subscription_end_date,
                 'last_login': self.last_login
             }
         )

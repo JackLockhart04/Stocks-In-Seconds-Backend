@@ -60,7 +60,6 @@ def get_user():
                 table_name=DB_TABLE_NAME,
                 email=email,
                 username=username,
-                subscription_status=0,  # or any default status you want to set
                 last_login=datetime.now().strftime("%m/%d/%Y")  # Get current date in month/day/year format
             )
             # Add to db
@@ -68,31 +67,6 @@ def get_user():
         else:
             # Update attributes of user (Always last login)
             update_data = {"last_login":datetime.now().strftime("%m/%d/%Y")}
-            
-            # Update payment info and subscription status if user has made a payment
-            from app.payment.routes import get_last_payment
-            last_payment_info = get_last_payment(email)
-
-            # If user has made a payment
-            if last_payment_info:
-                # Update user's subscription status
-                last_payment_status = last_payment_info.get("status")
-                update_data["subscription_start_date"] = last_payment_info.get("start_date")
-                update_data["subscription_end_date"] = last_payment_info.get("end_date")
-
-                # Check subscription status
-                if last_payment_status == "active":
-                    update_data["subscription_status"] = 1
-                    session["user"]["subscription_status"] = 1
-                    session["user"]["subscription_start_date"] = last_payment_info.get("start_date")
-                    session["user"]["subscription_end_date"] = last_payment_info.get("end_date")
-                    session["user"]["cancel_at_period_end"] = last_payment_info.get("cancel_at_period_end")
-                else:
-                    update_data["subscription_status"] = 0
-                    session["user"]["subscription_status"] = 0
-            else:
-                update_data["subscription_status"] = 0
-                session["user"]["subscription_status"] = 0
                 
             #Update db
             user.update(update_data)

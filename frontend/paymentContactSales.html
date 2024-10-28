@@ -1,112 +1,127 @@
-<code>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
-    rel="stylesheet"
-  />
-  <style>
-    .main-div {
-      display: flex;
-      flex-direction: row;
-      height: 800px;
-      width: 100%;
-      align-items: stretch; /* Ensure children stretch to fill the container vertically */
-      font-family: "Roboto", sans-serif;
-    }
-    .plan-card-conatiner {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-    }
-    .most-popular {
-      display: flex;
-      height: 20px;
-      width: 100%;
-      justify-content: center;
-      align-items: center;
-      color: #fff;
-    }
-    .plan-card {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 10px;
-      border: 3px solid #96969665;
-    }
-    .plan-name {
-      display: flex;
-      height: 10%;
-      width: 100%;
-      justify-content: center;
-      align-items: center;
-      font-size: 10px;
-      color: #272727;
-    }
-    .plan-name h1 {
-      font-size: 20px;
-      font-weight: normal;
-    }
-    .plan-price {
-      display: flex;
-      flex-direction: column;
-      height: 10%;
-      width: 100%;
-      justify-content: center;
-      align-items: center;
-      font-size: 25px;
-      color: #1172d3;
-    }
-    #contact-message {
-      font-size: 13px;
-      color: #000;
-    }
-    .plan-button-div {
-      display: flex;
-      height: 10%;
-      width: 100%;
-      justify-content: center;
-      align-items: center;
-    }
-    .plan-button {
-      height: 50px;
-      width: 100px;
-      color: #fff;
-      background-color: #1172d3;
-      border: 0px;
-      border-radius: 3px;
-    }
-    .plan-button:hover {
-      cursor: pointer;
-      background-color: #000;
-    }
-    .plan-info {
-      display: flex;
-      flex-direction: column;
-      flex-grow: 1;
-      width: 100%;
-      align-items: center;
-      border-top: 2px solid #96969665;
-    }
-  </style>
-  <div class="main-div">
-    <div class="plan-card-conatiner">
-      <div class="most-popular"></div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .main-div {
+        display: flex;
+        flex-direction: column;
+        height: 800px;
+        width: 100%;
+        align-items: stretch;
+        font-family: "Roboto", sans-serif;
+      }
+
+      .plan-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 10px;
+        border: 6px solid #1172d365;
+        border-radius: 20px;
+        width: 100%;
+        height: 100%; /* Ensure the card takes full height */
+      }
+
+      .plan-name {
+        display: flex;
+        height: 10%;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        font-size: 10px;
+        color: #272727;
+        margin-top: 10px;
+      }
+
+      .plan-name h1 {
+        font-size: 20px;
+        font-weight: normal;
+      }
+
+      .plan-price {
+        display: flex;
+        flex-direction: column;
+        height: 10%;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        font-size: 25px;
+        color: #1172d3;
+        text-align: center; /* Center-align the text */
+      }
+
+      .plan-button-container {
+        display: flex;
+        height: 10%;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .plan-button {
+        height: 50px;
+        width: 100px;
+        color: #fff;
+        background-color: #1172d3;
+        border: 0px;
+        border-radius: 3px;
+      }
+
+      .plan-button:hover {
+        cursor: pointer;
+        background-color: #000;
+      }
+
+      .plan-info {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        width: 100%;
+        align-items: center;
+        border-top: 2px solid #96969665;
+        text-align: left; /* Left-align the text for bullet points */
+      }
+
+      .plan-info ul {
+        list-style-type: disc; /* Use bullet points */
+        padding-left: 20px; /* Add padding for the bullets */
+        margin: 0; /* Remove default margin */
+      }
+      .plan-info li {
+        margin-bottom: 10px; /* Add margin below each list item */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-div">
       <div class="plan-card">
         <div class="plan-name">
-          <h1>Plan Three</h1>
+          <h1><strong>Growth Consulting</strong></h1>
         </div>
-        <div id="contact-message" class="plan-price">
-          <p>Contact sales for pricing</p>
+        <div class="plan-price">
+          <p>Contact Sales for Pricing</p>
         </div>
-        <div class="plan-button-div">
-          <button class="plan-button">Contact sales</button>
+        <div class="plan-button-container">
+          <button class="plan-button">Contact Sales</button>
         </div>
         <div class="plan-info">
-          <p>Something</p>
-          <p>Something else</p>
+          <br /><br />
+          <ul>
+            <li>Access to Expert Mentorship</li>
+            <li>Custom Business Strategies</li>
+            <li>Business & Financial Health Report</li>
+            <li>Sales & Growth Optimization</li>
+            <li>Tailored Strategy to Maximize Growth</li>
+          </ul>
         </div>
       </div>
     </div>
-  </div>
-</code>
+  </body>
+</html>
